@@ -36,8 +36,7 @@ Task(int _order, String _pictureName, String _actionName, float _durationMinutes
   textPosY = mHeight*.7;
   
   timeString = " ";
-  
-
+ 
 }
 
 void update() {

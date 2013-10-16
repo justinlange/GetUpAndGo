@@ -1,5 +1,7 @@
+import android.view.inputmethod.InputMethodManager;
+import android.content.Context;
 
-
+             
 //get up & go!
 
 Task[] task;
@@ -59,10 +61,13 @@ void draw() {
  
   //input handled by mousePressed()
  
-  task[currentScreen].update();  
   task[currentScreen].draw();
   
-  if(resultsPage) drawResults();
+  if(!resultsPage){
+   task[currentScreen].update();  
+  }else{ 
+    drawResults();
+  }
 }
 
 
@@ -177,6 +182,16 @@ void writeData(){
 }
 
 void mouseReleased(){
+  
+  /*
+  if(screenCounter < 1){
+    if(buttonCheck(mouseX, mouseY){
+     println("button works!"); 
+    }
+  }
+   */ 
+  
+  
 
   if(resultsPage) exit();
   if (currentScreen < screenCount - 1) {
@@ -189,8 +204,15 @@ void mouseReleased(){
       resultsWritten = true;
 
     }
-  
+  }
+
+
+boolean buttonCheck(int x, int y){ 
+    return false;
+ 
 }
+
+
 
 
 
