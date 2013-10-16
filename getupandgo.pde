@@ -1,8 +1,13 @@
-import android.view.inputmethod.InputMethodManager;
-import android.content.Context;
+//import android.view.inputmethod.InputMethodManager;
+//import android.content.Context;
 
-             
+
 //get up & go!
+
+// table functions 
+int lastSession;
+int numberRows;
+String sessionString;
 
 Task[] task;
 
@@ -27,14 +32,16 @@ String[] pictureNames = {
   "splash", "bed", "shower", "dress", "cook", "eat", "clean", "pack", "check", "exit"
 };
 String [] actionNames = {
-"wakingzzz", "Make Bed", "Shower!", "dress", "Cook ur Yums", "Eat", "Do Dishes", "Pack ur bag!", "Check stove & lights", "Now go!"
+  "wakingzzz", "Make Bed", "Shower!", "dress", "Cook ur Yums", "Eat", "Do Dishes", "Pack ur bag!", "Check stove & lights", "Now go!"
 };
 
 String [] resultNames = {
-"wakingzzz", "making bed", "showering", "dressing", "cooking", "eating", "doing dieshes", "packing", "final checks", "Now go!"
+  "wakingzzz", "making bed", "showering", "dressing", "cooking", "eating", "doing dieshes", "packing", "final checks", "Now go!"
 };
 
-int[] durationTimes = {2,4,1,5,7,8,4,5,2,1};
+int[] durationTimes = {
+  2, 4, 1, 5, 7, 8, 4, 5, 2, 1
+};
 
 Table resultTable;
 
@@ -43,175 +50,198 @@ int mHeight =768;
 
 void setup() {
   size(1280, 768); 
-  
+
   setupTable();
   sanityCheck(); 
   startTime();
   makeFonts();
   makeObjects();
-  
-  println("target Exit Minutes: " + targetExitMinutes);
 
+  println("target Exit Minutes: " + targetExitMinutes);
 }
 
 void draw() {
-  
+
   background(255);
   getTime();
- 
+
   //input handled by mousePressed()
- 
+
   task[currentScreen].draw();
-  
-  if(!resultsPage){
-   task[currentScreen].update();  
-  }else{ 
+
+  if (!resultsPage) {
+    task[currentScreen].update();
+  }
+  else { 
     drawResults();
   }
 }
 
 
-void startTime(){
-    if(!resetBool) {
-        resetBool = true;
-        millisEllapsedBeforeStart = millis();
-   } 
-   for(int i=0; i<durationTimes.length; i++){
-    targetExitMinutes+=durationTimes[i]; 
-   }
-}
-
-void allocateRemainingTime(){
-  
- float remainingStoredTime = 0;
- float weightedTimeValue = 0;
- float secondsEllapsed = timeEllapsed / 1000;
- float secondsRemaining = (targetExitMinutes*60) - secondsEllapsed; 
- 
- 
- for(int i = currentScreen; i < durationTimes.length; i++){
-    remainingStoredTime += task[i].durationMinutes;
-    }
-    
- for(int i = currentScreen + 1; i < durationTimes.length; i++){
-      print(pictureNames[i] + "  " + task[i].durationMinutes + "   ");
-      task[i].durationMinutes= (task[i].durationMinutes/remainingStoredTime) * targetExitMinutes; 
-    } 
-}
-
-void sanityCheck(){
-   if (actionNames.length != pictureNames.length || pictureNames.length != durationTimes.length) {
-    println("need same length data arrays!");
-  exit();
+void startTime() {
+  if (!resetBool) {
+    resetBool = true;
+    millisEllapsedBeforeStart = millis();
   } 
+  for (int i=0; i<durationTimes.length; i++) {
+    targetExitMinutes+=durationTimes[i];
+  }
 }
 
-void makeFonts(){
-  
+void allocateRemainingTime() {
+
+  float remainingStoredTime = 0;
+  float weightedTimeValue = 0;
+  float secondsEllapsed = timeEllapsed / 1000;
+  float secondsRemaining = (targetExitMinutes*60) - secondsEllapsed; 
+
+
+  for (int i = currentScreen; i < durationTimes.length; i++) {
+    remainingStoredTime += task[i].durationMinutes;
+  }
+
+  for (int i = currentScreen + 1; i < durationTimes.length; i++) {
+    print(pictureNames[i] + "  " + task[i].durationMinutes + "   ");
+    task[i].durationMinutes= (task[i].durationMinutes/remainingStoredTime) * targetExitMinutes;
+  }
+}
+
+void sanityCheck() {
+  if (actionNames.length != pictureNames.length || pictureNames.length != durationTimes.length) {
+    println("need same length data arrays!");
+    exit();
+  }
+}
+
+void makeFonts() {
+
   timeFontSmall = createFont("BlackBoard.ttf", 36, true);
   textFont(timeFontSmall);
   timeFontMedium = createFont("BlackBoard.ttf", 72, true);
   textFont(timeFontMedium);
   timeFontLarge = createFont("BlackBoard.ttf", 120, true);
-  textFont(timeFontLarge); 
+  textFont(timeFontLarge);
 }
 
-void makeObjects(){ 
+void makeObjects() { 
   screenCount = pictureNames.length;
   task = new Task[screenCount];
   for (int i = 0; i < screenCount; i++ ) {
     task[i] = new Task(i, pictureNames[i], actionNames[i], durationTimes[i]);
-  }  
+  }
 }
 
-void getTime(){
+void getTime() {
   timeEllapsed = millis() - millisEllapsedBeforeStart;
 }
 
-void drawResults(){
+void drawResults() {
   int yPos = 150;
-  
-  fill(150,150);
+
+  fill(150, 150);
   noStroke();
-  rect(0,100,mWidth, mHeight-200);
+  rect(0, 100, mWidth, mHeight-200);
   fill(50);
+
+  //make headers
+  textAlign(CENTER);
+  text("Today", 550, yPos);
+  text("Yesterday", 900, yPos); 
+
   textAlign(LEFT);
   textFont(timeFontSmall); 
-  for(int i = 0; i< screenCount; i++){ 
+  for (int i = 0; i< screenCount; i++) { 
     text(resultNames[i], 100, yPos + i*50);
-    text(task[i].timeString, 700, yPos + i*50);
-  } 
+    textAlign(LEFT);
+    text(task[i].timeString, 550, yPos + i*50);   
+    }
+    int i = 50;
+    println(sessionString);
+ for (TableRow row: resultTable.findRows(sessionString, "session")) {
+    textAlign(RIGHT);
+    text(floor((row.getInt("time"))/60), 880, yPos+ i);
+    text(":", 895, yPos +i);
+    textAlign(LEFT);
+    text(nf((row.getInt("time"))%60,2), 900, yPos+ i);
+    i+= 50;
+ }   
 }
 
-void setupTable(){
-  try{ 
-    resultTable = loadTable("results.csv", "header");  
-  }catch (Exception e) {
-    tableExists = false;    
+void setupTable() {
+  try { 
+    resultTable = loadTable("results.csv", "header");
+     lastSession = 0;
+      numberRows = resultTable.getRowCount();
+  if (numberRows < 2) {
+    sessionString = nf(0,1);
   }
-  if(tableExists == false){
-      resultTable = new Table();
+  else {
+    sessionString = nf(resultTable.getInt(numberRows - 1, "session"),1);
+    println(lastSession);
+  }
+  }
+  catch (Exception e) {
+    tableExists = false;
+  }
+  if (tableExists == false) {
+    resultTable = new Table();
     resultTable.addColumn("date");
     resultTable.addColumn("task");
     resultTable.addColumn("time");    
-    resultTable.addColumn("session"); 
+    resultTable.addColumn("session");
   }
-
 }
-  
-void writeData(){
+
+void writeData() {
   println("we are in writeDate();"); 
-  
-  
-  int lastSession = 0;
-  int numberRows = resultTable.getRowCount();
-  if(numberRows < 2){
-     lastSession = 0;
-  }else{
-   lastSession = resultTable.getInt(numberRows - 1, "session");
+
+  lastSession = 0;
+  numberRows = resultTable.getRowCount();
+  if (numberRows < 2) {
+    lastSession = 0;
   }
- 
-    for(int i = 0; i< screenCount; i++){       
-      TableRow newRow = resultTable.addRow();
-      newRow.setInt("date", int(nf(year(),4) + nf(month(), 2) + nf(day(), 2)));
-      newRow.setString("task", resultNames[i]);
-      newRow.setFloat("time", task[i].mSecondsLeft);
-      newRow.setInt("session", lastSession + 1);
+  else {
+    lastSession = resultTable.getInt(numberRows - 1, "session");
+  }
+
+  for (int i = 0; i< screenCount; i++) {       
+    TableRow newRow = resultTable.addRow();
+    newRow.setInt("date", int(nf(year(), 4) + nf(month(), 2) + nf(day(), 2)));
+    newRow.setString("task", resultNames[i]);
+    newRow.setFloat("time", task[i].mSecondsLeft);
+    newRow.setInt("session", lastSession + 1);
   }  
-      saveTable(resultTable, "results.csv");
+  saveTable(resultTable, "results.csv");
 }
 
-void mouseReleased(){
-  
-  /*
-  if(screenCounter < 1){
-    if(buttonCheck(mouseX, mouseY){
-     println("button works!"); 
-    }
-  }
-   */ 
-  
-  
+void mouseReleased() {
 
-  if(resultsPage) exit();
+  /* 
+   if(screenCounter < 1){
+   if(buttonCheck(mouseX, mouseY){
+   println("button works!"); 
+   }
+   }
+   */
+
+  if (resultsPage) exit();
   if (currentScreen < screenCount - 1) {
-       task[currentScreen].writeTime(); 
-       allocateRemainingTime();       
-       currentScreen++;
-    }else{
-      resultsPage = true;
-      if(!resultsWritten) writeData();
-      resultsWritten = true;
-
-    }
+    task[currentScreen].writeTime(); 
+    allocateRemainingTime();       
+    currentScreen++;
   }
-
-
-boolean buttonCheck(int x, int y){ 
-    return false;
- 
+  else {
+    resultsPage = true;
+    if (!resultsWritten) writeData();
+    resultsWritten = true;
+  }
 }
 
+
+boolean buttonCheck(int x, int y) { 
+
+  return false;
+}
 
 
 
