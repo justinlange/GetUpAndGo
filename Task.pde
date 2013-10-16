@@ -6,10 +6,10 @@ String pictureName;
 String actionName;
 float startTime;
 PImage mScreen;
-
+String timeString;
 //time functions
-float durationMinutes;
 
+float durationMinutes;
 float secondsEllapsed;
 float mSecondsLeft;
 float mMinutesLeft;
@@ -35,31 +35,16 @@ Task(int _order, String _pictureName, String _actionName, float _durationMinutes
   textPosX = width/2;
   textPosY = height*.7;
   
+  timeString = " ";
+  
 
 }
 
 void update() {
-  
    mSecondsLeft = (durationMinutes * 60) - (millis()/1000 - millisEllapsedBeforeStart/1000);
    mSecondsToDisplay = int( mSecondsLeft % 60);
    mMinutesLeft = (mSecondsLeft)/60;
-   mMinutesToDisplay = int(mMinutesLeft);
-    //mSecondsLeft = seconds - (millis()/1000 - millisEllapsedBeforeStart/1000) % 60;
-    
-   // mMinutesLeft = ((durationMinutes*60 - mSecondsLeft)/60) % 60;
-   // mMinutesLeft = durationMinutes   
-
-   
-/*  
-  minutesLeft = durationMinutes + 60 - (minute() - timeEllapsedBeforeStart); 
-  if(mMinutes < 1){
-    if(!secondsLeft){
-       secondsLeft = true;
-    }
-  }
-  
-  */
- 
+   mMinutesToDisplay = int(mMinutesLeft); 
 }
 
 void writeTime(){ 
@@ -73,14 +58,14 @@ void draw() {
 }
 
 void drawType() {
-  //int seconds = minute(mTime);
   
+   fill(50,230);
    textAlign(CENTER);
    textFont(timeFontLarge);
    text(actionName, textPosX, textPosY/2);
    
-   String timeString = mMinutesToDisplay + " : " + mSecondsToDisplay;
-   textFont(timeFontSmall); 
+   timeString = mMinutesToDisplay + " : " + mSecondsToDisplay;
+   textFont(timeFontMedium); 
    text(timeString, textPosX, textPosY); 
 }
 }
