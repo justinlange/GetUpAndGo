@@ -32,8 +32,8 @@ Task(int _order, String _pictureName, String _actionName, float _durationMinutes
   durationMinutes = _durationMinutes;
   
   mScreen = loadImage(pictureName + ".png"); 
-  textPosX = width/2;
-  textPosY = height*.7;
+  textPosX = mWidth/2;
+  textPosY = mHeight*.7;
   
   timeString = " ";
   
@@ -59,7 +59,7 @@ void draw() {
 
 void drawType() {
   
-   fill(50,230);
+   fill(50);
    textAlign(CENTER);
    textFont(timeFontLarge);
    text(actionName, textPosX, textPosY/2);

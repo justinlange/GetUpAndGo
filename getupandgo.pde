@@ -15,6 +15,7 @@ int timeEllapsed;
 boolean resultsPage = false;
 boolean resetBool = false;
 boolean resultsWritten = false;
+boolean tableExists = true;
 
 float targetExitMinutes;
 
@@ -39,7 +40,7 @@ int mWidth = 1280;
 int mHeight =768;
 
 void setup() {
-  size(mWidth, mHeight); 
+  size(1280, 768); 
   
   setupTable();
   sanityCheck(); 
@@ -125,9 +126,9 @@ void getTime(){
 void drawResults(){
   int yPos = 150;
   
-  fill(150,100);
+  fill(150,150);
   noStroke();
-  rect(0,100,width, height-200);
+  rect(0,100,mWidth, mHeight-200);
   fill(50);
   textAlign(LEFT);
   textFont(timeFontSmall); 
@@ -138,7 +139,19 @@ void drawResults(){
 }
 
 void setupTable(){
-  resultTable = loadTable("results.csv", "header");  
+  try{ 
+    resultTable = loadTable("results.csv", "header");  
+  }catch (Exception e) {
+    tableExists = false;    
+  }
+  if(tableExists == false){
+      resultTable = new Table();
+    resultTable.addColumn("date");
+    resultTable.addColumn("task");
+    resultTable.addColumn("time");    
+    resultTable.addColumn("session"); 
+  }
+
 }
   
 void writeData(){
