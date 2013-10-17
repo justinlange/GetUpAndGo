@@ -19,6 +19,7 @@ int mMinutesToDisplay;
 boolean resetBool = false;
 boolean timeUp = false;
 boolean secondsLeft = false;
+boolean drawType = true;
 
 float seconds = 60;
 
@@ -44,14 +45,17 @@ void update() {
    mSecondsToDisplay = int( mSecondsLeft % 60);
    mMinutesLeft = (mSecondsLeft)/60;
    mMinutesToDisplay = int(mMinutesLeft); 
+   timeString = mMinutesToDisplay + " : " + mSecondsToDisplay;
+
 }
 
 void writeTime(){ 
 }
 
 void draw() {
+  
    image(mScreen, 0, 0);
-   if(currentScreen > 0){
+   if(drawType){
      drawType();
    }     
 }
@@ -63,7 +67,6 @@ void drawType() {
    textFont(timeFontLarge);
    text(actionName, textPosX, textPosY/2);
    
-   timeString = mMinutesToDisplay + " : " + mSecondsToDisplay;
    textFont(timeFontMedium); 
    text(timeString, textPosX, textPosY); 
 }

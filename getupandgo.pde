@@ -32,7 +32,7 @@ String[] pictureNames = {
   "splash", "bed", "shower", "dress", "cook", "eat", "clean", "pack", "check", "exit"
 };
 String [] actionNames = {
-  "wakingzzz", "Make Bed", "Shower!", "dress", "Cook ur Yums", "Eat", "Do Dishes", "Pack ur bag!", "Check stove & lights", "Now go!"
+  "wakingzzz", "Make Bed", "Shower!", "dress", "Cook ur Yums", "Eat", "Do Dishes", "Pack ur bag!", "Check stove", "Now go!"
 };
 
 String [] resultNames = {
@@ -40,13 +40,15 @@ String [] resultNames = {
 };
 
 int[] durationTimes = {
-  2, 4, 1, 5, 7, 8, 4, 5, 2, 1
+  4, 5, 12, 5, 7, 8, 4, 5, 2, 1
 };
 
 Table resultTable;
 
 int mWidth = 1280;
 int mHeight =768;
+
+
 
 void setup() {
   size(1280, 768); 
@@ -60,12 +62,12 @@ void setup() {
   println("target Exit Minutes: " + targetExitMinutes);
 }
 
+
+
 void draw() {
 
   background(255);
   getTime();
-
-  //input handled by mousePressed()
 
   task[currentScreen].draw();
 
@@ -101,7 +103,7 @@ void allocateRemainingTime() {
   }
 
   for (int i = currentScreen + 1; i < durationTimes.length; i++) {
-    print(pictureNames[i] + "  " + task[i].durationMinutes + "   ");
+    //print(pictureNames[i] + "  " + task[i].durationMinutes + "   ");
     task[i].durationMinutes= (task[i].durationMinutes/remainingStoredTime) * targetExitMinutes;
   }
 }
@@ -129,6 +131,8 @@ void makeObjects() {
   for (int i = 0; i < screenCount; i++ ) {
     task[i] = new Task(i, pictureNames[i], actionNames[i], durationTimes[i]);
   }
+task[0].drawType = false;
+
 }
 
 void getTime() {
@@ -137,6 +141,7 @@ void getTime() {
 
 void drawResults() {
   int yPos = 150;
+  int tg = 50;
 
   fill(150, 150);
   noStroke();
@@ -150,20 +155,24 @@ void drawResults() {
 
   textAlign(LEFT);
   textFont(timeFontSmall); 
+  
+  yPos += tg;
+  
   for (int i = 0; i< screenCount; i++) { 
-    text(resultNames[i], 100, yPos + i*50);
+    println("i is: " + i);
+    text(resultNames[i], 100, yPos + i*tg);
     textAlign(LEFT);
-    text(task[i].timeString, 550, yPos + i*50);   
+    text(task[i].timeString, 550, yPos + i*tg);   
     }
-    int i = 50;
-    println(sessionString);
+    int i = 0;
+    
  for (TableRow row: resultTable.findRows(sessionString, "session")) {
     textAlign(RIGHT);
     text(floor((row.getInt("time"))/60), 880, yPos+ i);
     text(":", 895, yPos +i);
     textAlign(LEFT);
     text(nf((row.getInt("time"))%60,2), 900, yPos+ i);
-    i+= 50;
+    i+= tg;
  }   
 }
 
@@ -192,6 +201,8 @@ void setupTable() {
   }
 }
 
+
+
 void writeData() {
   println("we are in writeDate();"); 
 
@@ -214,6 +225,8 @@ void writeData() {
   saveTable(resultTable, "results.csv");
 }
 
+
+
 void mouseReleased() {
 
   /* 
@@ -232,6 +245,7 @@ void mouseReleased() {
   }
   else {
     resultsPage = true;
+    task[currentScreen].drawType = false;
     if (!resultsWritten) writeData();
     resultsWritten = true;
   }
