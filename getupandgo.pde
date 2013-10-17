@@ -1,6 +1,7 @@
 //import android.view.inputmethod.InputMethodManager;
 //import android.content.Context;
 
+import java.lang.Iterable;
 
 //get up & go!
 
@@ -159,72 +160,43 @@ void drawResults() {
   yPos += tg;
   
   for (int i = 0; i< screenCount; i++) { 
-    println("i is: " + i);
     text(resultNames[i], 100, yPos + i*tg);
     textAlign(LEFT);
     text(task[i].timeString, 550, yPos + i*tg);   
     }
-    int i = 0;
-    
+    int ig = 0;
+ 
+ /*   
  for (TableRow row: resultTable.findRows(sessionString, "session")) {
     textAlign(RIGHT);
-    text(floor((row.getInt("time"))/60), 880, yPos+ i);
-    text(":", 895, yPos +i);
+    text(floor((row.getInt("time"))/60), 880, yPos+ ig);
+    text(":", 895, yPos +ig);
     textAlign(LEFT);
-    text(nf((row.getInt("time"))%60,2), 900, yPos+ i);
-    i+= tg;
- }   
+    text(nf((row.getInt("time"))%60,2), 900, yPos+ ig);
+    ig+= tg;
+ } 
+ 
+*/
+ 
+    TableRow row = resultTable.findRow(sessionString, "session");
+    //print("sessionString: " + sessionString);
+
+    int tIterator = row.getInt("id");
+    
+    print("  tIterator: " + tIterator); 
+    
+    for (int i = tIterator; i< tIterator+10; i++){
+      println("  i: " + i);
+      TableRow nRow = resultTable.getRow(i);
+      textAlign(RIGHT);
+      text(floor((nRow.getInt("time"))/60), 880, yPos+ tg*ig);
+      text(":", 895, yPos +i);
+      textAlign(LEFT);
+      text(nf((nRow.getInt("time"))%60,2), 900, yPos+ tg*ig);
+      ig++;
+ } 
+ 
 }
-
-void setupTable() {
-  try { 
-    resultTable = loadTable("results.csv", "header");
-     lastSession = 0;
-      numberRows = resultTable.getRowCount();
-  if (numberRows < 2) {
-    sessionString = nf(0,1);
-  }
-  else {
-    sessionString = nf(resultTable.getInt(numberRows - 1, "session"),1);
-    println(lastSession);
-  }
-  }
-  catch (Exception e) {
-    tableExists = false;
-  }
-  if (tableExists == false) {
-    resultTable = new Table();
-    resultTable.addColumn("date");
-    resultTable.addColumn("task");
-    resultTable.addColumn("time");    
-    resultTable.addColumn("session");
-  }
-}
-
-
-
-void writeData() {
-  println("we are in writeDate();"); 
-
-  lastSession = 0;
-  numberRows = resultTable.getRowCount();
-  if (numberRows < 2) {
-    lastSession = 0;
-  }
-  else {
-    lastSession = resultTable.getInt(numberRows - 1, "session");
-  }
-
-  for (int i = 0; i< screenCount; i++) {       
-    TableRow newRow = resultTable.addRow();
-    newRow.setInt("date", int(nf(year(), 4) + nf(month(), 2) + nf(day(), 2)));
-    newRow.setString("task", resultNames[i]);
-    newRow.setFloat("time", task[i].mSecondsLeft);
-    newRow.setInt("session", lastSession + 1);
-  }  
-  saveTable(resultTable, "results.csv");
-}
-
 
 
 void mouseReleased() {
