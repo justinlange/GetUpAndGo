@@ -31,24 +31,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+//import android.content.Intent;
+//Intent email;
 
-String cardOneURL = "http://pokegym.net/gallery/displayimage.php?imageid=51910";
-String cardTwoURL = "http://pokegym.net/gallery/displayimage.php?imageid=51910";
-String cardThreeURL = "third";
 
-import android.content.Intent;
-String subject = "Test from your Android device!";
-String emailBody = "This is an email, sent from your Android device. Congrats!";
-String tablePath = "/sdcard/results.csv";
-
-Intent email;
-
-//get up & go!
-
-// table functions 
 int lastSession;
 int numberRows;
 String sessionString;
+String tablePath = "/sdcard/results.csv";
 
 Task[] task;
 
@@ -60,6 +50,7 @@ int counter = 0;
 int millisEllapsedBeforeStart;
 int timeEllapsed;
 
+boolean splashPage = true;
 boolean resultsPage = false;
 boolean resetBool = false;
 boolean resultsWritten = false;
@@ -72,6 +63,13 @@ int currentScreen = 0;
 String[] pictureNames = {
   "splash", "bed", "shower", "dress", "cook", "eat", "clean", "pack", "check", "exit"
 };
+
+String[] replacementImages = { 
+  " ", " ", " ", " ", "foodlater", "tupperware", " ", " ", " ", " ", " " };
+
+String[] replacementActions = {
+"","","","", "No time to cook!", "Take food 2 go", "", "", "", ""};
+ 
 String [] actionNames = {
   "wakingzzz", "Make Bed", "Shower!", "dress", "Cook ur Yums", "Eat", "Do Dishes", "Pack ur bag!", "Check stove", "Now go!"
 };
@@ -80,8 +78,14 @@ String [] resultNames = {
   "Waking up:", "Making bed:", "Showering:", "Dressing:", "Cooking:", "Eating:", "Doing dishes:", "Packing:", "Final checks:", "Walking out..."
 };
 
+/*
 int[] durationTimes = {
-  1, 2, 10, 3, 8, 5, 3, 4, 2, 1
+  1, 2, 10, 4, 8, 6, 3, 4, 2, 1
+};
+*/
+//debug times
+float[] durationTimes = {
+  .03, .03, .03, .01, .05, .05, .01, .01, .02, .03
 };
 
 Table resultTable;
@@ -92,10 +96,9 @@ int mHeight =768;
 
 
 void setup() {
-  size(1280, 768); 
-
+  size(1280, 768);
+  
   setupTable();
-  sanityCheck(); 
   startTime();
   makeFonts();
   makeObjects();
@@ -109,12 +112,9 @@ void draw() {
 
   background(255);
   getTime();
-
   task[currentScreen].startTimer();
   task[currentScreen].draw();
   
- 
-
   if (!resultsPage) {
     task[currentScreen].update();
   }
@@ -122,47 +122,9 @@ void draw() {
     drawResults();
   }
   
-   fill(0);
+  fill(0);
   stroke(0,255,0);
   rect(100, 800,100,100);
-  
-
-}
-
-
-void startTime() {
-  if (!resetBool) {
-    resetBool = true;
-    millisEllapsedBeforeStart = millis();
-  } 
-  for (int i=0; i<durationTimes.length; i++) {
-    targetExitMinutes+=durationTimes[i];
-  }
-}
-
-void allocateRemainingTime() {
-
-  float remainingStoredTime = 0;
-  float weightedTimeValue = 0;
-  float secondsEllapsed = timeEllapsed / 1000;
-  float secondsRemaining = (targetExitMinutes*60) - secondsEllapsed; 
-
-
-  for (int i = currentScreen; i < durationTimes.length; i++) {
-    remainingStoredTime += task[i].durationMinutes;
-  }
-
-  for (int i = currentScreen + 1; i < durationTimes.length; i++) {
-    //print(pictureNames[i] + "  " + task[i].durationMinutes + "   ");
-    task[i].durationMinutes= (task[i].durationMinutes/remainingStoredTime) * targetExitMinutes;
-  }
-}
-
-void sanityCheck() {
-  if (actionNames.length != pictureNames.length || pictureNames.length != durationTimes.length) {
-    println("need same length data arrays!");
-    exit();
-  }
 }
 
 
@@ -173,74 +135,11 @@ void makeObjects() {
     task[i] = new Task(i, pictureNames[i], actionNames[i], durationTimes[i]);
   }
 task[0].drawType = false;
+task[4].canSkip = true;
+task[5].canSkip = true;
 
 }
 
-void getTime() {
-  timeEllapsed = millis() - millisEllapsedBeforeStart;
-}
-
-
-
-
-void mouseReleased() {
-  
-
-  
-  if(buttonCheck(264,600,396,100)){
-   println("button 1 works!"); 
-   currentScreen++;
-   }
-   
-   if(buttonCheck(677,580,345,100)){
-     println("button 2 works!"); 
-   }
-   
-    if(currentScreen != 0){ 
-
-    if (resultsPage) exit();
-  
-    if (currentScreen < screenCount - 1) {
-      task[currentScreen].writeTime(); 
-      allocateRemainingTime();       
-      currentScreen++;
-    }
-    else {
-      resultsPage = true;
-      task[currentScreen].drawType = false;
-      if (!resultsWritten) writeData();
-      resultsWritten = true;
-    }
-  }
-}
-
-
-boolean buttonCheck(int x, int y, int w, int h) { 
-  println("x: " + mouseX + "  y: " + mouseY);
-  
-  if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h) {
-    return true;
-  }
-  
-  return false;
- 
-}
-
-void sendEmail() {
-  try {
-    // create email message
-    email = new Intent(Intent.ACTION_SEND);
-    email.setType("text/plain");
-    email.putExtra(Intent.EXTRA_SUBJECT, subject);
-    email.putExtra(Intent.EXTRA_TEXT, emailBody);
-
-    // send!
-    startActivity(Intent.createChooser(email, "Send email..."));
-  }
-  catch (android.content.ActivityNotFoundException ex) {
-    println("No email client installed, email failed... :(");
-  }
-}
 
 
 

@@ -13,18 +13,21 @@ String resultsString;
 //time functions
 
 float durationMinutes;
+float originalDurationMinutes;
 float secondsEllapsed;
 float mSecondsLeft;
 float mMinutesLeft;
 int mSecondsToDisplay;
 int mMinutesToDisplay;
-int varFill = 255;
+int varFill = 0;
 int textColor = 50;
 
 boolean resetBool = false;
+boolean firstUpdate = true;
 boolean timeUp = false;
 boolean secondsLeft = false;
 boolean drawType = true;
+boolean canSkip = false;
 
 float seconds = 60;
 
@@ -36,6 +39,7 @@ Task(int _order, String _pictureName, String _actionName, float _durationMinutes
   pictureName = _pictureName;
   actionName = _actionName;
   durationMinutes = _durationMinutes;
+  originalDurationMinutes = durationMinutes;
   
   mScreen = loadImage(pictureName + ".png"); 
   textPosX = mWidth/2;
@@ -47,6 +51,17 @@ Task(int _order, String _pictureName, String _actionName, float _durationMinutes
 }
 
 void update() {
+  
+  if(firstUpdate){
+    if(durationMinutes < originalDurationMinutes*.9 && canSkip == true){
+      println("origDurMins: " + originalDurationMinutes + "  durationMintues: " + durationMinutes);
+      mScreen = loadImage(replacementImages[currentScreen] + ".png");
+      actionName = replacementActions[currentScreen];
+    }
+   firstUpdate = false; 
+  }
+  
+  
    mSecondsLeft = (durationMinutes * 60) - (millis()/1000 - millisEllapsedAtStart/1000);
    mMinutesLeft = (mSecondsLeft)/60;
    
@@ -68,7 +83,7 @@ void writeTime(){
   println("results string: " + resultsString + " secondsTaken: " + secondsTaken);
 }
 
-int checkTime(){
+float checkTime(){
   secondsTaken = millis() - millisEllapsedAtStart;
   secondsTaken = secondsTaken/1000;
   return secondsTaken;
@@ -91,12 +106,15 @@ void drawType() {
     fill(235,25,25);
   }
   
-   textAlign(CENTER);
+   textAlign(LEFT);
    textFont(timeFontMedium); 
-   text(timeString, textPosX, textPosY); 
+   text(timeString, textPosX-50, textPosY); 
    
-   if(varFill > 0 && checkTime() > 1) varFill-=3;
+   if(varFill < 255 && checkTime() < 2) varFill+=7;
    
+   if(varFill > 0 && checkTime() > 3) varFill-=3;
+   
+   textAlign(CENTER);
    fill(textColor, varFill);   
    textFont(timeFontLarge);
    text(actionName, textPosX, textPosY/2); 
