@@ -1,7 +1,47 @@
 //import android.view.inputmethod.InputMethodManager;
 //import android.content.Context;
 
-import java.lang.Iterable;
+//import java.lang.Iterable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+
+
+String cardOneURL = "http://pokegym.net/gallery/displayimage.php?imageid=51910";
+String cardTwoURL = "http://pokegym.net/gallery/displayimage.php?imageid=51910";
+String cardThreeURL = "third";
+
+import android.content.Intent;
+String subject = "Test from your Android device!";
+String emailBody = "This is an email, sent from your Android device. Congrats!";
+String tablePath = "/sdcard/results.csv";
+
+Intent email;
 
 //get up & go!
 
@@ -37,11 +77,11 @@ String [] actionNames = {
 };
 
 String [] resultNames = {
-  "wakingzzz", "making bed", "showering", "dressing", "cooking", "eating", "doing dieshes", "packing", "final checks", "Now go!"
+  "wakingzzz", "making bed", "showering", "dressing", "cooking", "eating", "doing dishes", "packing", "final checks", "Now go!"
 };
 
 int[] durationTimes = {
-  4, 5, 12, 5, 7, 8, 4, 5, 2, 1
+  1, 2, 10, 3, 8, 5, 3, 4, 2, 1
 };
 
 Table resultTable;
@@ -67,10 +107,14 @@ void setup() {
 
 void draw() {
 
+  
   background(255);
   getTime();
 
+  task[currentScreen].startTimer();
   task[currentScreen].draw();
+  
+ 
 
   if (!resultsPage) {
     task[currentScreen].update();
@@ -78,6 +122,12 @@ void draw() {
   else { 
     drawResults();
   }
+  
+   fill(0);
+  stroke(0,255,0);
+  rect(100, 800,100,100);
+  
+
 }
 
 
@@ -116,15 +166,6 @@ void sanityCheck() {
   }
 }
 
-void makeFonts() {
-
-  timeFontSmall = createFont("BlackBoard.ttf", 36, true);
-  textFont(timeFontSmall);
-  timeFontMedium = createFont("BlackBoard.ttf", 72, true);
-  textFont(timeFontMedium);
-  timeFontLarge = createFont("BlackBoard.ttf", 120, true);
-  textFont(timeFontLarge);
-}
 
 void makeObjects() { 
   screenCount = pictureNames.length;
@@ -140,76 +181,24 @@ void getTime() {
   timeEllapsed = millis() - millisEllapsedBeforeStart;
 }
 
-void drawResults() {
-  int yPos = 150;
-  int tg = 50;
-
-  fill(150, 150);
-  noStroke();
-  rect(0, 100, mWidth, mHeight-200);
-  fill(50);
-
-  //make headers
-  textAlign(CENTER);
-  text("Today", 550, yPos);
-  text("Yesterday", 900, yPos); 
-
-  textAlign(LEFT);
-  textFont(timeFontSmall); 
-  
-  yPos += tg;
-  
-  for (int i = 0; i< screenCount; i++) { 
-    text(resultNames[i], 100, yPos + i*tg);
-    textAlign(LEFT);
-    text(task[i].timeString, 550, yPos + i*tg);   
-    }
-    int ig = 0;
- 
- /*   
- for (TableRow row: resultTable.findRows(sessionString, "session")) {
-    textAlign(RIGHT);
-    text(floor((row.getInt("time"))/60), 880, yPos+ ig);
-    text(":", 895, yPos +ig);
-    textAlign(LEFT);
-    text(nf((row.getInt("time"))%60,2), 900, yPos+ ig);
-    ig+= tg;
- } 
- 
-*/
- 
-    TableRow row = resultTable.findRow(sessionString, "session");
-    //print("sessionString: " + sessionString);
-
-    int tIterator = row.getInt("id");
-    
-    print("  tIterator: " + tIterator); 
-    
-    for (int i = tIterator; i< tIterator+10; i++){
-      println("  i: " + i);
-      TableRow nRow = resultTable.getRow(i);
-      textAlign(RIGHT);
-      text(floor((nRow.getInt("time"))/60), 880, yPos+ tg*ig);
-      text(":", 895, yPos +i);
-      textAlign(LEFT);
-      text(nf((nRow.getInt("time"))%60,2), 900, yPos+ tg*ig);
-      ig++;
- } 
- 
-}
-
 
 void mouseReleased() {
+  
+    submitVote("working");
 
   /* 
    if(screenCounter < 1){
-   if(buttonCheck(mouseX, mouseY){
-   println("button works!"); 
-   }
+   
    }
    */
+   
+  if(buttonCheck(300, 800,100,100)){
+   println("button works!"); 
+   }
+   
 
   if (resultsPage) exit();
+  
   if (currentScreen < screenCount - 1) {
     task[currentScreen].writeTime(); 
     allocateRemainingTime();       
@@ -224,9 +213,55 @@ void mouseReleased() {
 }
 
 
-boolean buttonCheck(int x, int y) { 
-
+boolean buttonCheck(int x, int y, int w, int h) { 
+  
+  if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h) return true;
   return false;
+ 
+}
+
+void sendEmail() {
+  try {
+    // create email message
+    email = new Intent(Intent.ACTION_SEND);
+    email.setType("text/plain");
+    email.putExtra(Intent.EXTRA_SUBJECT, subject);
+    email.putExtra(Intent.EXTRA_TEXT, emailBody);
+
+    // send!
+    startActivity(Intent.createChooser(email, "Send email..."));
+  }
+  catch (android.content.ActivityNotFoundException ex) {
+    println("No email client installed, email failed... :(");
+  }
+}
+
+private void submitVote(String outcome) {
+    HttpClient client = new DefaultHttpClient();
+    HttpPost post = new HttpPost("https://docs.google.com/spreadsheet/formResponse?formkey=dEM0UlRxNGJSTzVJa25lRHlCeWlJSmc6MA");
+
+    List<BasicNameValuePair> results = new ArrayList<BasicNameValuePair>();
+    results.add(new BasicNameValuePair("entry.0.single", cardOneURL));
+    results.add(new BasicNameValuePair("entry.1.single", outcome));
+    results.add(new BasicNameValuePair("entry.2.single", cardTwoURL));
+    results.add(new BasicNameValuePair("entry.3.single", cardThreeURL));
+
+
+    try {
+        post.setEntity(new UrlEncodedFormEntity(results));
+    } catch (UnsupportedEncodingException e) {
+        // Auto-generated catch block
+        Log.e("YOUR_TAG", "An error has occurred", e);
+    }
+    try {
+        client.execute(post);
+    } catch (ClientProtocolException e) {
+        // Auto-generated catch block
+        Log.e("YOUR_TAG", "client protocol exception", e);
+    } catch (IOException e) {
+        // Auto-generated catch block
+        Log.e("YOUR_TAG", "io exception", e);
+    }
 }
 
 

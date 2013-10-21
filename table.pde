@@ -1,6 +1,6 @@
 void setupTable() {
   try { 
-    resultTable = loadTable("results.csv", "header");
+    resultTable = loadTable(tablePath, "header");
      lastSession = 0;
       numberRows = resultTable.getRowCount();
   if (numberRows < 2) {
@@ -40,9 +40,9 @@ void writeData() {
     TableRow newRow = resultTable.addRow();
     newRow.setInt("date", int(nf(year(), 4) + nf(month(), 2) + nf(day(), 2)));
     newRow.setString("task", resultNames[i]);
-    newRow.setFloat("time", task[i].mSecondsLeft);
+    newRow.setFloat("time", task[i].secondsTaken);
     newRow.setInt("session", lastSession + 1);
     newRow.setInt("id", resultTable.getRowCount() + 1);
   }  
-  saveTable(resultTable, "results.csv");
+  saveTable(resultTable, tablePath);
 }
