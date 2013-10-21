@@ -77,7 +77,7 @@ String [] actionNames = {
 };
 
 String [] resultNames = {
-  "wakingzzz", "making bed", "showering", "dressing", "cooking", "eating", "doing dishes", "packing", "final checks", "Now go!"
+  "Waking up:", "Making bed:", "Showering:", "Dressing:", "Cooking:", "Eating:", "Doing dishes:", "Packing:", "Final checks:", "Walking out..."
 };
 
 int[] durationTimes = {
@@ -107,7 +107,6 @@ void setup() {
 
 void draw() {
 
-  
   background(255);
   getTime();
 
@@ -182,40 +181,47 @@ void getTime() {
 }
 
 
+
+
 void mouseReleased() {
   
-    submitData("working");
 
-  /* 
-   if(screenCounter < 1){
-   
-   }
-   */
-   
-  if(buttonCheck(300, 800,100,100)){
-   println("button works!"); 
-   }
-   
-
-  if (resultsPage) exit();
   
-  if (currentScreen < screenCount - 1) {
-    task[currentScreen].writeTime(); 
-    allocateRemainingTime();       
-    currentScreen++;
-  }
-  else {
-    resultsPage = true;
-    task[currentScreen].drawType = false;
-    if (!resultsWritten) writeData();
-    resultsWritten = true;
+  if(buttonCheck(264,600,396,100)){
+   println("button 1 works!"); 
+   currentScreen++;
+   }
+   
+   if(buttonCheck(677,580,345,100)){
+     println("button 2 works!"); 
+   }
+   
+    if(currentScreen != 0){ 
+
+    if (resultsPage) exit();
+  
+    if (currentScreen < screenCount - 1) {
+      task[currentScreen].writeTime(); 
+      allocateRemainingTime();       
+      currentScreen++;
+    }
+    else {
+      resultsPage = true;
+      task[currentScreen].drawType = false;
+      if (!resultsWritten) writeData();
+      resultsWritten = true;
+    }
   }
 }
 
 
 boolean buttonCheck(int x, int y, int w, int h) { 
+  println("x: " + mouseX + "  y: " + mouseY);
   
-  if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h) return true;
+  if(mouseX > x && mouseX < x+w && mouseY > y && mouseY < y+h) {
+    return true;
+  }
+  
   return false;
  
 }

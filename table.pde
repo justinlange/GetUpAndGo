@@ -45,4 +45,7 @@ void writeData() {
     newRow.setInt("id", resultTable.getRowCount() + 1);
   }  
   saveTable(resultTable, tablePath);
+  
+  
+  submitData(pictureNames);
 }

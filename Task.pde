@@ -92,19 +92,15 @@ void drawType() {
   }
   
    textAlign(CENTER);
-   
    textFont(timeFontMedium); 
    text(timeString, textPosX, textPosY); 
    
-   if(varFill > 0 && checkTime() > 3) varFill-=3;
-   fill(textColor, varFill);
+   if(varFill > 0 && checkTime() > 1) varFill-=3;
    
-   println("textColor: " + textColor + "  varFill: " + varFill);
-   
+   fill(textColor, varFill);   
    textFont(timeFontLarge);
    text(actionName, textPosX, textPosY/2); 
-   
-   
+    
 
 }
 

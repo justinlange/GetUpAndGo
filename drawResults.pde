@@ -27,24 +27,22 @@ void drawResults() {
     TableRow row = resultTable.findRow(sessionString, "session");
     int tIterator = row.getInt("id");
     int loopEnd = tIterator+screenCount;    
-     println("tIterator: " + tIterator);
+     //println("tIterator: " + tIterator);
    
     int ig = 0; // for drawing   
     
     for (int i = tIterator; i< loopEnd; i++){
-      print("  i: " + i + "  ig: " + ig + "  yPos: " + yPos);
+      //print("  i: " + i + "  ig: " + ig + "  yPos: " + yPos);
       TableRow nRow = resultTable.getRow(i-2);
       textAlign(RIGHT);
       
-      println(nRow.getString("task"));
+      //println(nRow.getString("task"));
       
 
       text(floor((nRow.getInt("time"))/60), 880, yPos+ tg*ig);
       text(" :", 895, yPos + tg*ig);
       textAlign(LEFT);
       text(nf((nRow.getInt("time"))%60,2), 900, yPos+ tg*ig);
-            //next line for debug only
-      text(nRow.getString("task"), 1000, yPos + tg*ig);
       ig++;
  } 
  
